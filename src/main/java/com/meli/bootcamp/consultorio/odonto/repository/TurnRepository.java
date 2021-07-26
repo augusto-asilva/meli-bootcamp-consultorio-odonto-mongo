@@ -4,11 +4,14 @@ import com.meli.bootcamp.consultorio.odonto.domain.Turn;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface TurnRepository extends MongoRepository<Turn, String> {
 
     List<Turn> findTurnByTurnStatusName(String turnStatusName);
+
+    List<Turn> findTurnsByTurnStatusNameAndDays(String turnStatusName, LocalDate day);
 
 }
