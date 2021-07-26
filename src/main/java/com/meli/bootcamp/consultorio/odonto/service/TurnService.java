@@ -1,6 +1,7 @@
 package com.meli.bootcamp.consultorio.odonto.service;
 
 import com.meli.bootcamp.consultorio.odonto.domain.Turn;
+import com.meli.bootcamp.consultorio.odonto.domain.User;
 import com.meli.bootcamp.consultorio.odonto.dto.TurnFormDTO;
 import com.meli.bootcamp.consultorio.odonto.repository.TurnRepository;
 import com.meli.bootcamp.consultorio.odonto.repository.TurnStatusRepository;
@@ -8,6 +9,8 @@ import com.meli.bootcamp.consultorio.odonto.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,12 +49,24 @@ public class TurnService {
         return turnRepository.findAll();
     }
 
+    public List<User> findPatientByTurnCompletedAndDays(LocalDate day) {
+        List<User> users = new ArrayList<>();
+        List<Turn> turns = turnRepository.findTurnsByTurnStatusNameAndDays("completado", day);
+        turns.forEach(turn -> users.add(turn.getPatient()));
+        return users;
+    }
+
+    public List<Turn> findTurnWaitingAtDay(LocalDate day) {
+        return  turnRepository.findTurnsByTurnStatusNameAndDays("pendente", day);
+    }
+
+
     public void save(TurnFormDTO turnFormDTO) {
 
         Turn turnToSave = turnFormDTO.parseToTurn(
                 turnStatusRepository.findTurnStatusByName(turnFormDTO.getTurnStatus()),
                 userRepository.findUserByDni(turnFormDTO.getPatientDni())
-                );
+        );
 
         turnRepository.insert(turnToSave);
     }
